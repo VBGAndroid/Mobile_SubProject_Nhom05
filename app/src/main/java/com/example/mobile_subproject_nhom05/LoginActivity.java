@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,6 +29,17 @@ public class LoginActivity extends AppCompatActivity {
         EditText password = findViewById(R.id.edtPassword);
 
         fAuth = FirebaseAuth.getInstance();
+
+        //============= chuyen sang form resister
+        TextView edResiter = findViewById(R.id.tvResister);
+        edResiter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Toast.makeText(LoginActivity.this, "Hello", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
 
         Button btnLogin = findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener(new View.OnClickListener() {
