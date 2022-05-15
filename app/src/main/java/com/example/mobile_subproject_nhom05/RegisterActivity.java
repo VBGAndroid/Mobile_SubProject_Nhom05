@@ -67,9 +67,9 @@ public class RegisterActivity extends AppCompatActivity {
                             } else {
                                 Toast.makeText(RegisterActivity.this, "create Fail" , Toast.LENGTH_SHORT).show();
                             }
-
                         }
                     });
+
                 } else {
                     Toast.makeText(RegisterActivity.this, "Pass không giống nhau", Toast.LENGTH_SHORT).show();
                 }
