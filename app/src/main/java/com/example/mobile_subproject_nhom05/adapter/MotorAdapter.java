@@ -67,7 +67,6 @@ public class MotorAdapter extends RecyclerView.Adapter<MotorAdapter.MotorViewHol
     }
 
     private void addToCart(Motor motor) {
-
         DatabaseReference userCart = FirebaseDatabase
                 .getInstance("https://mobile-subproject-nhom05-default-rtdb.asia-southeast1.firebasedatabase.app")
                 .getReference("Cart")
@@ -77,6 +76,7 @@ public class MotorAdapter extends RecyclerView.Adapter<MotorAdapter.MotorViewHol
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+
                         if (snapshot.exists()){
                             Cart cart = snapshot.getValue(Cart.class);
                             cart.setQuantity(cart.getQuantity()+1);
@@ -92,6 +92,7 @@ public class MotorAdapter extends RecyclerView.Adapter<MotorAdapter.MotorViewHol
                                     .addOnFailureListener(e -> cartLoadListener.onCartLoadFailed(e.getMessage()));
                         }
                         else {
+
                             Cart cart = new Cart();
                             cart.setName(motor.getName());
                             cart.setImage(motor.getImage());
@@ -106,11 +107,14 @@ public class MotorAdapter extends RecyclerView.Adapter<MotorAdapter.MotorViewHol
                                         cartLoadListener.onCartLoadFailed("Add to cart sucess");
                                     }).addOnFailureListener(e -> cartLoadListener.onCartLoadFailed(e.getMessage()));
                         }
+
                         EventBus.getDefault().postSticky(new UpdateCartEvent());
+
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
+
                         cartLoadListener.onCartLoadFailed(error.getMessage());
                     }
                 });
@@ -122,6 +126,7 @@ public class MotorAdapter extends RecyclerView.Adapter<MotorAdapter.MotorViewHol
     }
 
     public class MotorViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+
         @BindView(R.id.ivListItem   )
         ImageView imageView;
         @BindView(R.id.txtName)
