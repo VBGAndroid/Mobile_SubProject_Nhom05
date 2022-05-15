@@ -1,24 +1,19 @@
 package com.example.mobile_subproject_nhom05.module;
 
 import androidx.annotation.NonNull;
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
 
-@Entity
 public class Motor {
 
-    @PrimaryKey
+
     @NonNull
     private String key;
 
-    @ColumnInfo(name = "name")
+
     private String name;
 
-    @ColumnInfo(name = "image")
+
     private String image;
 
-    @ColumnInfo(name = "price")
     private String price;
 
     public Motor(String key, String name, String image, String price) {
