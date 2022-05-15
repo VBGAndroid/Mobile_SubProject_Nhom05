@@ -1,19 +1,9 @@
 package com.example.mobile_subproject_nhom05.module;
 
-import androidx.annotation.NonNull;
-
 public class Motor {
-
-
-    @NonNull
     private String key;
-
-
     private String name;
-
-
     private String image;
-
     private String price;
 
     public Motor(String key, String name, String image, String price) {

@@ -7,7 +7,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -18,6 +20,7 @@ import com.example.mobile_subproject_nhom05.event.UpdateCartEvent;
 import com.example.mobile_subproject_nhom05.listener.ICartLoadListener;
 import com.example.mobile_subproject_nhom05.module.Cart;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -35,6 +38,7 @@ import butterknife.ButterKnife;
 
 public class ListCartActivity extends AppCompatActivity implements ICartLoadListener {
 
+    private FirebaseAuth fAuth = FirebaseAuth.getInstance();
 
     @BindView(R.id.recyclerViewCart)
     RecyclerView recyclerView;
@@ -42,6 +46,8 @@ public class ListCartActivity extends AppCompatActivity implements ICartLoadList
     ConstraintLayout constraintLayout;
     @BindView(R.id.txtTotalPrice)
     TextView textView;
+    @BindView(R.id.btnBack)
+    ImageView btnBack;
 
     ICartLoadListener cartLoadListener;
 
@@ -72,7 +78,7 @@ public class ListCartActivity extends AppCompatActivity implements ICartLoadList
         List<Cart> cartList = new ArrayList<>();
         FirebaseDatabase.getInstance("https://mobile-subproject-nhom05-default-rtdb.asia-southeast1.firebasedatabase.app")
                 .getReference("Cart")
-                .child("UNIQUE_USER_ID")
+                .child(fAuth.getCurrentUser().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -104,6 +110,13 @@ public class ListCartActivity extends AppCompatActivity implements ICartLoadList
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this,layoutManager.getOrientation()));
 
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(ListCartActivity.this,ListMainActivity.class);
+                startActivity(i);
+            }
+        });
     }
 
     @Override

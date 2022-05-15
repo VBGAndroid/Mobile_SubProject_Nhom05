@@ -11,7 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/border_item_cart">
+        android:background="@drawable/border_item_cart_left">
 
         <ImageView
             android:id="@+id/imageView2"
@@ -40,12 +40,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="232dp"
         android:layout_height="match_parent"
-        android:background="#FBD3E9">
+        android:background="@drawable/border_item_cart_right">
 
         <ImageView
             android:id="@+id/btnDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
             android:src="@drawable/ic_baseline_clear_24"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

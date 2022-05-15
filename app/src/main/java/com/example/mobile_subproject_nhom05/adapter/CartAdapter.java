@@ -18,6 +18,7 @@ import com.example.mobile_subproject_nhom05.R;
 import com.example.mobile_subproject_nhom05.activity.ListCartActivity;
 import com.example.mobile_subproject_nhom05.event.UpdateCartEvent;
 import com.example.mobile_subproject_nhom05.module.Cart;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
 import org.greenrobot.eventbus.EventBus;
@@ -29,6 +30,8 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
+
+    private FirebaseAuth fAuth = FirebaseAuth.getInstance();
 
     private ListCartActivity listCartActivity;
     private Context context;
@@ -53,6 +56,69 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         holder.textPrice.setText(new StringBuffer("$").append(cartList.get(position).getPrice()));
         holder.textName.setText(new StringBuffer().append(cartList.get(position).getName()));
         holder.textQuantity.setText(new StringBuffer().append(cartList.get(position).getQuantity()));
+
+
+        holder.btnMinus.setOnClickListener(view -> minusCartItem(holder,cartList.get(position)));
+
+        holder.btnPlus.setOnClickListener(view -> plusCartItem(holder,cartList.get(position)));
+
+        holder.btnDelete.setOnClickListener(view -> {
+            AlertDialog dialog = new AlertDialog.Builder(context)
+                    .setTitle("Delete item")
+                    .setMessage("Bạn có muốn xóa sản phẩm này")
+                    .setNegativeButton("Hủy", (dialogInterface, i) -> dialogInterface.dismiss())
+                    .setNegativeButton("Đồng ý", (dialogInterface, i) -> {
+                        Intent intent = new Intent(context,ListCartActivity.class);
+                        context.startActivity(intent);
+                        notifyItemChanged(position);
+                        deleteFromFirebase(cartList.get(position));
+                        dialogInterface.dismiss();
+                    }).create();
+            dialog.show();
+        });
+    }
+
+    private void deleteFromFirebase(Cart cart) {
+        FirebaseDatabase.getInstance("https://mobile-subproject-nhom05-default-rtdb.asia-southeast1.firebasedatabase.app")
+                .getReference("Cart")
+                .child(fAuth.getCurrentUser().getUid())
+                .child(cart.getKey())
+                .removeValue()
+                .addOnSuccessListener(unused -> EventBus.getDefault().postSticky(new UpdateCartEvent()));
+    }
+
+    private void plusCartItem(CartViewHolder holder, Cart cart) {
+        cart.setQuantity(cart.getQuantity()+1);
+        cart.setTotalPrice(cart.getQuantity()*Float.parseFloat(cart.getPrice()));
+
+        holder.textQuantity.setText(new StringBuffer().append(cart.getQuantity()));
+        updateFirebase(cart);
+
+        Intent i = new Intent(context,ListCartActivity.class);
+        context.startActivity(i);
+    }
+
+    private void minusCartItem(CartViewHolder holder, Cart cart) {
+
+        if(cart.getQuantity() > 1){
+            cart.setQuantity(cart.getQuantity()-1);
+            cart.setTotalPrice(cart.getQuantity()*Float.parseFloat(cart.getPrice()));
+
+            holder.textQuantity.setText(new StringBuffer().append(cart.getQuantity()));
+            updateFirebase(cart);
+
+            Intent i = new Intent(context,ListCartActivity.class);
+            context.startActivity(i);
+        }
+    }
+
+    private void updateFirebase(Cart cart) {
+        FirebaseDatabase.getInstance("https://mobile-subproject-nhom05-default-rtdb.asia-southeast1.firebasedatabase.app")
+                .getReference("Cart")
+                .child(fAuth.getCurrentUser().getUid())
+                .child(cart.getKey())
+                .setValue(cart)
+                .addOnSuccessListener(unused -> EventBus.getDefault().postSticky(new UpdateCartEvent()));
     }
 
     @Override

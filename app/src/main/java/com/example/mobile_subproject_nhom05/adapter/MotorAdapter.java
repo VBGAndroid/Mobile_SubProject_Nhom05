@@ -18,6 +18,7 @@ import com.example.mobile_subproject_nhom05.listener.ICartLoadListener;
 import com.example.mobile_subproject_nhom05.listener.IRecylerViewClickListener;
 import com.example.mobile_subproject_nhom05.module.Cart;
 import com.example.mobile_subproject_nhom05.module.Motor;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,6 +36,8 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 public class MotorAdapter extends RecyclerView.Adapter<MotorAdapter.MotorViewHolder> {
+
+    private FirebaseAuth fAuth = FirebaseAuth.getInstance();
 
     private Context context;
     private List<Motor> motorList;
@@ -67,16 +70,16 @@ public class MotorAdapter extends RecyclerView.Adapter<MotorAdapter.MotorViewHol
     }
 
     private void addToCart(Motor motor) {
+
         DatabaseReference userCart = FirebaseDatabase
                 .getInstance("https://mobile-subproject-nhom05-default-rtdb.asia-southeast1.firebasedatabase.app")
                 .getReference("Cart")
-                .child("UNIQUE_USER_ID");
+                .child(fAuth.getCurrentUser().getUid());
 
         userCart.child(motor.getKey())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-
                         if (snapshot.exists()){
                             Cart cart = snapshot.getValue(Cart.class);
                             cart.setQuantity(cart.getQuantity()+1);
@@ -92,7 +95,6 @@ public class MotorAdapter extends RecyclerView.Adapter<MotorAdapter.MotorViewHol
                                     .addOnFailureListener(e -> cartLoadListener.onCartLoadFailed(e.getMessage()));
                         }
                         else {
-
                             Cart cart = new Cart();
                             cart.setName(motor.getName());
                             cart.setImage(motor.getImage());
@@ -107,14 +109,11 @@ public class MotorAdapter extends RecyclerView.Adapter<MotorAdapter.MotorViewHol
                                         cartLoadListener.onCartLoadFailed("Add to cart sucess");
                                     }).addOnFailureListener(e -> cartLoadListener.onCartLoadFailed(e.getMessage()));
                         }
-
                         EventBus.getDefault().postSticky(new UpdateCartEvent());
-
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-
                         cartLoadListener.onCartLoadFailed(error.getMessage());
                     }
                 });
@@ -126,7 +125,6 @@ public class MotorAdapter extends RecyclerView.Adapter<MotorAdapter.MotorViewHol
     }
 
     public class MotorViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-
         @BindView(R.id.ivListItem   )
         ImageView imageView;
         @BindView(R.id.txtName)

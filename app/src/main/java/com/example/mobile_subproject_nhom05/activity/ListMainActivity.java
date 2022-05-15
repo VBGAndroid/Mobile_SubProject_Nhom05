@@ -19,6 +19,7 @@ import com.example.mobile_subproject_nhom05.listener.IMotorLoadListener;
 import com.example.mobile_subproject_nhom05.module.Cart;
 import com.example.mobile_subproject_nhom05.module.Motor;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -36,6 +37,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ListMainActivity extends AppCompatActivity implements IMotorLoadListener, ICartLoadListener {
+
+    private FirebaseAuth fAuth = FirebaseAuth.getInstance();
 
     @BindView(R.id.recyclerViewMotor)
     RecyclerView recyclerView;
@@ -91,58 +94,11 @@ public class ListMainActivity extends AppCompatActivity implements IMotorLoadLis
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addItemDecoration(new SpaceItemDecoration());
 
-//        Log.d("Size",getAllMotorFromLocal().size()+"");
-//        if(getAllMotorFromLocal().size() <= 0) {
-//            readDataFromFirebase();
-//            for(Motor motor : motorList){
-//                Log.d("SOS",motor.getName());
-//            }
-//            addMotorToLocalUsingRoom(motorList);
-//        }
-//        motorList = getAllMotorFromLocal();
-//        for(Motor motor : motorList){
-//            Log.d("SOS",motor.getName());
-//        }
-//        MotorAdapter adapter = new MotorAdapter(this,motorList,cartLoadListener);
-//        recyclerView.setAdapter(adapter);
-
-//        addDataToFireStore();
-
         btnCart.setOnClickListener(view -> {
             Intent i = new Intent(ListMainActivity.this,ListCartActivity.class);
             startActivity(i);
         });
     }
-
-//    public void addMotorToLocalUsingRoom(List<Motor> motors) {
-//        for (Motor motor: motors) {
-//            MotorDB.getInstance(this).motorDao().insertMotor(motor);
-//        }
-//    }
-
-//    public List<Motor> getAllMotorFromLocal () {
-//        motorList = MotorDB.getInstance(this).motorDao().getAll();
-//        return motorList;
-//    }
-
-//    public void addDataToFireStore() {
-//        for (Motor motor: motorList) {
-//
-//            String pathOject = String.valueOf(motor.getKey());
-//
-//            FirebaseDatabase.getInstance("https://mobile-subproject-nhom05-default-rtdb.asia-southeast1.firebasedatabase.app")
-//                    .getReference("Motor")
-//                    .child(pathOject)
-//                    .setValue(motor)
-//                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<Void> task) {
-//                            Toast.makeText(ListMainActivity.this, "Add success", Toast.LENGTH_SHORT).show();
-//                            motorLoadListener.onMotorLoadSuccess(motorList);
-//                        }
-//                    });
-//        }
-//    }
 
     private void loadMotorFromFirebase() {
         FirebaseDatabase.getInstance("https://mobile-subproject-nhom05-default-rtdb.asia-southeast1.firebasedatabase.app")
@@ -156,9 +112,6 @@ public class ListMainActivity extends AppCompatActivity implements IMotorLoadLis
                                 motor.setKey(drinkSnapshot.getKey());
                                 motorList.add(motor);
                             }
-//                            for(Motor motor : motorList){
-//                                Log.d("SOS",motor.getName());
-//                            }
                             motorLoadListener.onMotorLoadSuccess(motorList);
                         }
                         else{
@@ -172,28 +125,6 @@ public class ListMainActivity extends AppCompatActivity implements IMotorLoadLis
                     }
                 });
     }
-
-//    private void readDataFromFirebase(){
-//        FirebaseDatabase.getInstance("https://mobile-subproject-nhom05-default-rtdb.asia-southeast1.firebasedatabase.app")
-//                .getReference("Motor")
-//                .addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                        if (snapshot.exists()){
-//                            for (DataSnapshot drinkSnapshot : snapshot.getChildren()){
-//                                Motor motor = drinkSnapshot.getValue(Motor.class);
-//                                motor.setKey(drinkSnapshot.getKey());
-//                                motorList.add(motor);
-//                            }
-//                            motorLoadListener.onMotorLoadSuccess(motorList);
-//                        }
-//                    }
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//                        Log.d("ERROR",error.getMessage());
-//                    }
-//                });
-//    }
 
     @Override
     public void onMotorLoadSuccess(List<Motor> motors) {
@@ -232,7 +163,7 @@ public class ListMainActivity extends AppCompatActivity implements IMotorLoadLis
         FirebaseDatabase
                 .getInstance("https://mobile-subproject-nhom05-default-rtdb.asia-southeast1.firebasedatabase.app")
                 .getReference("Cart")
-                .child("UNIQUE_USER_ID")
+                .child(fAuth.getCurrentUser().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
